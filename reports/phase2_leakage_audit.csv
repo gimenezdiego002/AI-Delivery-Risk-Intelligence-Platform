@@ -1,0 +1,34 @@
+feature,knowable_at_order_time,used_by_model,reason
+order_item_count,YES,YES,order contents are known at checkout
+product_count,YES,YES,order contents are known at checkout
+seller_count,YES,YES,sellers fulfilling the order are known at checkout
+order_price,YES,YES,item prices are known at checkout
+freight_value,YES,YES,quoted freight is known at checkout
+total_product_weight_g,YES,YES,catalog product attributes are already known
+product_weight_g,YES,YES,primary product's catalog weight is already known
+payment_value,YES,YES,committed payment value is known at checkout
+payment_installments,YES,YES,selected installment count is known at checkout
+payment_count,YES,YES,payment methods committed for the order are known
+estimated_delivery_days,YES,YES,promised delivery date is known at order time
+order_month,YES,YES,derived from the order timestamp
+order_day_of_week,YES,YES,derived from the order timestamp
+seller_customer_distance_km,YES,YES,seller/customer zip prefixes are known
+seller_historical_order_volume,YES,YES,uses only earlier order timestamps
+seller_historical_late_rate,YES,YES,uses only outcomes completed earlier
+seller_historical_avg_review_score,YES,YES,uses only reviews created earlier
+category_historical_late_rate,YES,YES,uses only outcomes completed earlier
+category_historical_avg_delivery_days,YES,YES,uses only outcomes completed earlier
+product_category_name,YES,YES,product catalog category is known
+payment_type,YES,YES,selected payment type is known at checkout
+customer_state,YES,YES,shipping destination is known at checkout
+seller_state,YES,YES,seller location is known before fulfillment
+order_status,NO,NO,status changes after placement
+order_approved_at,NO,NO,approval occurs after placement
+order_delivered_carrier_date,NO,NO,carrier handoff occurs after placement
+order_delivered_customer_date,NO,NO,actual delivery is the future outcome
+delivery_days,NO,NO,depends on actual delivery
+delay_days,NO,NO,directly reveals the target
+review_score,NO,NO,review is created after delivery
+review_count,NO,NO,reviews are created after delivery
+has_review_comment,NO,NO,review content is created after delivery
+review_available_at,NO,NO,current order review occurs after delivery
