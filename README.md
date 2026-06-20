@@ -8,11 +8,13 @@ The project uses the Brazilian E-Commerce (Olist) dataset to build an
 order-level late-delivery classifier and, in later phases, an AI agent that can
 explain order, seller, and product-category risk.
 
-## Current status: Phase 2 complete
+## Current status: Phase 4 complete
 
-Phase 1 created the reproducible order-level data foundation. Phase 2 adds
-geographic distance, leakage-safe seller/category history, an explicit feature
-audit, and a chronologically evaluated Logistic Regression baseline.
+Phase 1 created the reproducible order-level data foundation. Phase 2 added
+leakage-safe features and a Logistic Regression baseline. Phase 3 compares that
+baseline with Random Forest and XGBoost on the same future test period and
+tracks every experiment with MLflow. Phase 4 exposes deterministic prediction,
+explanation, seller-history, and similar-order tools without an LLM.
 
 ## Project structure
 
@@ -134,6 +136,77 @@ The high recall means the baseline catches most late deliveries. Its low
 precision means it produces many false alarms, which gives Phase 3 a concrete
 model-quality problem to improve.
 
+## Phase 3 workflow
+
+Install the declared dependencies, then run the comparison:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m src.models.train_models
+```
+
+All models use the Phase 2 cutoff of `2018-05-01`. Logistic Regression and
+Random Forest use balanced class weights; XGBoost uses the training-set class
+ratio through `scale_pos_weight`.
+
+Phase 3 test results:
+
+| Model | Precision | Recall | F1 | ROC-AUC | PR-AUC |
+|---|---:|---:|---:|---:|---:|
+| Logistic Regression | 0.092 | 0.840 | 0.167 | 0.698 | 0.124 |
+| Random Forest | 0.112 | 0.081 | 0.094 | 0.607 | 0.088 |
+| XGBoost | 0.124 | 0.166 | 0.142 | 0.650 | 0.102 |
+
+Logistic Regression remains the winner by F1. It catches substantially more
+late orders, although its many false positives remain a limitation. Results,
+run IDs, parameters, and artifacts are tracked in the local `mlflow.db` store.
+
+To inspect experiments in the MLflow UI:
+
+```powershell
+.\.venv\Scripts\mlflow.exe ui --backend-store-uri sqlite:///mlflow.db
+```
+
+Then open `http://127.0.0.1:5000` in a browser.
+
+Phase 3 outputs:
+
+- `models/best_delivery_risk_model.joblib`
+- `models/model_features.json`
+- `reports/phase_3_model_comparison.md`
+- `reports/phase_3_metrics.json`
+- `reports/phase_3_feature_importance.png`
+
+## Phase 4 tools
+
+The reusable tools live in `src/agent/tools.py`:
+
+- `predict_delay_risk(order_id)` loads the saved winner and returns a risk
+  probability at the existing 0.50 threshold.
+- `explain_risk(order_id)` ranks that order's Logistic Regression feature
+  contributions and builds deterministic, non-causal summary text.
+- `get_seller_history(seller_id, as_of_order_id=None)` returns the exact
+  leakage-safe seller snapshot created in Phase 2.
+- `get_similar_past_orders(order_id, top_n=5)` uses scaled numeric features,
+  one-hot categories, and nearest neighbors over orders completed before the
+  query was placed.
+
+Example:
+
+```powershell
+.\.venv\Scripts\python.exe -c "from src.agent.tools import predict_delay_risk; print(predict_delay_risk('6340164ffcc87a11dd0ad37d2551994c'))"
+```
+
+Run the deterministic tests:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest tests.test_agent_tools -v
+```
+
+All tools currently operate on order IDs already present in the prepared
+historical feature dataset. Predicting a genuinely new live order will require
+an online feature-construction path in a later deployment phase.
+
 ## Dataset source
 
 Brazilian E-Commerce Public Dataset by Olist, distributed through Kaggle. Raw
@@ -143,6 +216,7 @@ and processed data are excluded from Git because they are large and reproducible
 
 - **Phase 1:** ingestion, validation, joins, and initial features (complete)
 - **Phase 2:** leakage-safe features and Logistic Regression baseline (complete)
-- **Phase 3:** Random Forest/XGBoost comparison tracked with MLflow
-- **Phase 4:** explanations and scoped agent tools
-- **Phase 5:** FastAPI, Streamlit, review embeddings, and containerization
+- **Phase 3:** Random Forest/XGBoost comparison tracked with MLflow (complete)
+- **Phase 4:** deterministic prediction, explanations, history, and similarity tools (complete)
+- **Phase 5:** labeled-query tool-routing evaluation without moving business logic into an LLM
+- **Phase 6:** FastAPI, Streamlit, performance testing, and containerization

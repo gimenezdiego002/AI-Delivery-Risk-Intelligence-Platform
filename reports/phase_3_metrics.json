@@ -1,0 +1,53 @@
+{
+  "cutoff_date": "2018-05-01",
+  "train_rows": 71124,
+  "test_rows": 25352,
+  "train_late_rate": 0.0879028176143074,
+  "test_late_rate": 0.06212527611233828,
+  "best_model": "logistic_regression",
+  "selection_rule": "highest F1; recall then precision tie-breakers",
+  "mlflow_tracking_uri": "sqlite:///C:/Users/gimen/AI-Delivery-Risk-Intelligence-Platform/mlflow.db",
+  "mlflow_run_ids": {
+    "logistic_regression": "e3b0e3d28ee240a888aba752bf2ad89a",
+    "random_forest": "3afcc42507f14ff5b6a3ce91de489af2",
+    "xgboost": "a655d98341a440bbb55bcae972db9972"
+  },
+  "models": {
+    "logistic_regression": {
+      "accuracy": 0.47775323445881984,
+      "precision": 0.09244636992523234,
+      "recall": 0.84,
+      "f1": 0.16656175248646607,
+      "roc_auc": 0.697891506464497,
+      "pr_auc": 0.12420511838519409,
+      "true_negative": 10789,
+      "false_positive": 12988,
+      "false_negative": 252,
+      "true_positive": 1323
+    },
+    "random_forest": {
+      "accuracy": 0.9032817923635216,
+      "precision": 0.11229000884173299,
+      "recall": 0.08063492063492063,
+      "f1": 0.09386548410938655,
+      "roc_auc": 0.6071380439013025,
+      "pr_auc": 0.08827028948315346,
+      "true_negative": 22773,
+      "false_positive": 1004,
+      "false_negative": 1448,
+      "true_positive": 127
+    },
+    "xgboost": {
+      "accuracy": 0.8750394446197539,
+      "precision": 0.12376003778932451,
+      "recall": 0.16634920634920636,
+      "f1": 0.1419284940411701,
+      "roc_auc": 0.6499780032858218,
+      "pr_auc": 0.10238577475627501,
+      "true_negative": 21922,
+      "false_positive": 1855,
+      "false_negative": 1313,
+      "true_positive": 262
+    }
+  }
+}

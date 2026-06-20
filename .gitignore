@@ -165,3 +165,5 @@ models/*
 # Local experiment tracking
 mlruns/
 mlartifacts/
+/mlflow.db
+/.matplotlib/
