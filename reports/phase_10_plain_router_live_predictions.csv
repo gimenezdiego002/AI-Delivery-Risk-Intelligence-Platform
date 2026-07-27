@@ -1,0 +1,41 @@
+query,expected_tool,predicted_tool,correct,error,model
+Will order 9694aa09499321709cdb542840ebbbb2 arrive late?,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+What is the late-delivery probability for order 43d6e5bfdbbfac022b7dad46056dfa64?,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+Is order 706f426a3e276fbc171e2d3aafbf2e1 high risk or low risk?,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+Check the delivery risk for order 0094bd07f49fed90209ffa62d1ef26d6.,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+Should operations flag order b925a62bfdf14b152f2fb572d1aa672c as likely late?,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+Predict whether order 9f1e272c76bf064ee7a4da8898a4beae will miss its estimate.,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+Give me the risk classification for order ba82a226d055b7cd8455167068fa576d.,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+How likely is order e18cae15f26662973fbe293e695ffcef to be delivered late?,predict_delay_risk,predict_delay_risk,True,,gpt-4o-mini
+Why is order 9694aa09499321709cdb542840ebbbb2 considered risky?,explain_risk,explain_risk,True,,gpt-4o-mini
+Which features influenced order 43d6e5bfdbbfac022b7dad46056dfa64's risk?,explain_risk,explain_risk,True,,gpt-4o-mini
+Explain the delivery-risk prediction for order 706f426a3e276fbc171e2d3aafbf2e1.,explain_risk,explain_risk,True,,gpt-4o-mini
+What raised or lowered the modeled risk for order 0094bd07f49fed90209ffa62d1ef26d6?,explain_risk,explain_risk,True,,gpt-4o-mini
+Show the model contributions for order b925a62bfdf14b152f2fb572d1aa672c.,explain_risk,explain_risk,True,,gpt-4o-mini
+Why did the model classify order 9f1e272c76bf064ee7a4da8898a4beae that way?,explain_risk,explain_risk,True,,gpt-4o-mini
+What are the strongest risk drivers for order ba82a226d055b7cd8455167068fa576d?,explain_risk,explain_risk,True,,gpt-4o-mini
+Explain why order e18cae15f26662973fbe293e695ffcef may or may not be late.,explain_risk,explain_risk,True,,gpt-4o-mini
+Show the history for seller 3078096983cf766a32a06257648502d1.,get_seller_history,get_seller_history,True,,gpt-4o-mini
+What is seller 57e632711dec9ec14ca7546769483e7e's historical late rate?,get_seller_history,get_seller_history,True,,gpt-4o-mini
+How reliable has seller c963a25b8671419c6ce9eebe8fd03218 been?,get_seller_history,get_seller_history,True,,gpt-4o-mini
+Give me order volume and average review score for seller 5670f4db5b62c43d542e1b2d56b0cf7c.,get_seller_history,get_seller_history,True,,gpt-4o-mini
+Summarize past performance for seller 7d13fca15225358621be4086e1eb0964.,get_seller_history,get_seller_history,True,,gpt-4o-mini
+What does the historical record show for seller c522be04e020c1e7b79f3acff36513d5?,get_seller_history,get_seller_history,True,,gpt-4o-mini
+Check seller 4869f7a5dfa277a7dca6462dcf3b52b2's prior delivery performance.,get_seller_history,get_seller_history,True,,gpt-4o-mini
+What average review score and late history does seller 33a6f4b1e7cdc205511e76ba1b6e0186 have?,get_seller_history,get_seller_history,True,,gpt-4o-mini
+Find similar past orders to order 9694aa09499321709cdb542840ebbbb2.,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Which completed orders are comparable to 43d6e5bfdbbfac022b7dad46056dfa64?,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Retrieve the nearest historical orders for order 706f426a3e276fbc171e2d3aafbf2e1a.,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Show completed orders like order 0094bd07f49fed90209ffa62d1ef26d6.,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+What happened to orders similar to b925a62bfdf14b152f2fb572d1aa672c?,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Run a similar-order sanity check for 9f1e272c76bf064ee7a4da8898a4beae.,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Give me comparable historical outcomes for order ba82a226d055b7cd8455167068fa576d.,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Find the closest past-order neighbors to e18cae15f26662973fbe293e695ffcef.,get_similar_past_orders,get_similar_past_orders,True,,gpt-4o-mini
+Will my order be late?,need_clarification,need_clarification,True,,gpt-4o-mini
+Why is this order risky?,need_clarification,need_clarification,True,,gpt-4o-mini
+How reliable is this seller?,need_clarification,need_clarification,True,,gpt-4o-mini
+Find similar completed orders for me.,need_clarification,need_clarification,True,,gpt-4o-mini
+I need help understanding delivery risk.,need_clarification,need_clarification,True,,gpt-4o-mini
+Can you check whether order 123 or order 456 will be late?,need_clarification,need_clarification,True,,gpt-4o-mini
+Tell me about the seller's performance.,need_clarification,need_clarification,True,,gpt-4o-mini
+Is it high risk?,need_clarification,need_clarification,True,,gpt-4o-mini

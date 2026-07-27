@@ -1,0 +1,153 @@
+[
+  {
+    "name": "order_risk_plus_seller_history",
+    "query": "Give the risk for order be55f985440dddd650b389a55db8e49c and the historical performance of seller 3078096983cf766a32a06257648502d1.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk", "get_seller_history"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  },
+  {
+    "name": "order_risk_plus_same_order_explanation",
+    "query": "Predict risk for order be55f985440dddd650b389a55db8e49c and explain that same order's risk.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk", "explain_risk"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  },
+  {
+    "name": "order_risk_plus_similar_orders",
+    "query": "Predict risk for order be55f985440dddd650b389a55db8e49c, then retrieve similar past orders for it.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk", "get_similar_past_orders"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  },
+  {
+    "name": "explanation_plus_seller_history",
+    "query": "Explain order be55f985440dddd650b389a55db8e49c, then show history for seller 3078096983cf766a32a06257648502d1.",
+    "expected_first_action": "explain_risk",
+    "expected_tools": ["explain_risk", "get_seller_history"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  },
+  {
+    "name": "ambiguous_two_order_ids",
+    "query": "Is order 9694aa09499321709cdb542840ebbbb2 or order 43d6e5bfdbbfac022b7dad46056dfa64 late?",
+    "expected_first_action": "need_clarification",
+    "expected_tools": [],
+    "expected_status": "need_clarification",
+    "clarification_expected": true,
+    "maximum_allowed_tool_calls": 0,
+    "grounding_required": true
+  },
+  {
+    "name": "two_order_ids_separate_tasks",
+    "query": "Predict order be55f985440dddd650b389a55db8e49c and explain order 9694aa09499321709cdb542840ebbbb2.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk", "explain_risk"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  },
+  {
+    "name": "valid_order_and_seller_distinct_tasks",
+    "query": "Find similar past orders for order be55f985440dddd650b389a55db8e49c and get history for seller 3078096983cf766a32a06257648502d1.",
+    "expected_first_action": "get_similar_past_orders",
+    "expected_tools": ["get_similar_past_orders", "get_seller_history"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  },
+  {
+    "name": "missing_order_id",
+    "query": "Predict the late-delivery risk for my order.",
+    "expected_first_action": "need_clarification",
+    "expected_tools": [],
+    "expected_status": "need_clarification",
+    "clarification_expected": true,
+    "maximum_allowed_tool_calls": 0,
+    "grounding_required": true
+  },
+  {
+    "name": "missing_seller_id",
+    "query": "Show me the seller's historical delivery performance.",
+    "expected_first_action": "need_clarification",
+    "expected_tools": [],
+    "expected_status": "need_clarification",
+    "clarification_expected": true,
+    "maximum_allowed_tool_calls": 0,
+    "grounding_required": true
+  },
+  {
+    "name": "unsupported_action",
+    "query": "Cancel the shipment and refund the customer.",
+    "expected_first_action": "need_clarification",
+    "expected_tools": [],
+    "expected_status": "need_clarification",
+    "clarification_expected": true,
+    "maximum_allowed_tool_calls": 0,
+    "grounding_required": true
+  },
+  {
+    "name": "unknown_identifier_type",
+    "query": "Check A and B.",
+    "expected_first_action": "need_clarification",
+    "expected_tools": [],
+    "expected_status": "need_clarification",
+    "clarification_expected": true,
+    "maximum_allowed_tool_calls": 0,
+    "grounding_required": true
+  },
+  {
+    "name": "compound_first_tool_error",
+    "query": "Predict order ffffffffffffffffffffffffffffffff and then show history for seller 3078096983cf766a32a06257648502d1.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk"],
+    "expected_status": "error",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 1,
+    "grounding_required": true
+  },
+  {
+    "name": "tool_call_cap",
+    "query": "For order be55f985440dddd650b389a55db8e49c predict risk, explain risk, find similar orders, and then show history for seller 3078096983cf766a32a06257648502d1.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk", "explain_risk", "get_similar_past_orders"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 3,
+    "expected_stop_reason": "max_tool_calls_reached",
+    "grounding_required": true
+  },
+  {
+    "name": "single_tool_completion",
+    "query": "Predict late-delivery risk for order be55f985440dddd650b389a55db8e49c.",
+    "expected_first_action": "predict_delay_risk",
+    "expected_tools": ["predict_delay_risk"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 1,
+    "grounding_required": true
+  },
+  {
+    "name": "two_tool_completion",
+    "query": "Explain risk for order be55f985440dddd650b389a55db8e49c and then find similar past orders for that same order.",
+    "expected_first_action": "explain_risk",
+    "expected_tools": ["explain_risk", "get_similar_past_orders"],
+    "expected_status": "completed",
+    "clarification_expected": false,
+    "maximum_allowed_tool_calls": 2,
+    "grounding_required": true
+  }
+]

@@ -1,0 +1,47 @@
+{
+    "plain":  {
+                  "status":  "need_clarification",
+                  "tools":  [
+
+                            ],
+                  "count":  0,
+                  "answer":  "Please specify whether you want to predict the delay risk or explain the risk for order be55f985440dddd650b389a55db8e49c."
+              },
+    "plain_conditional_loop_back":  {
+                                          "status":  "completed",
+                                          "tools":  [
+                                                        "predict_delay_risk",
+                                                        "explain_risk"
+                                                    ],
+                                          "count":  2,
+                                          "answer":  "The order has a high late-delivery risk with a probability of 85.00%. The model identified several increasing and decreasing risk signals. These associations are correlational, not causal."
+                                      },
+    "langgraph_direct":  {
+                             "status":  "completed",
+                             "tools":  [
+                                           "predict_delay_risk"
+                                       ],
+                             "count":  1,
+                             "stop_reason":  "enough_information",
+                             "answer":  "The risk for order be55f985440dddd650b389a55db8e49c is high, with a late delivery probability of approximately 85%. This prediction is based on a logistic regression model."
+                         },
+    "compound":  {
+                     "status":  "completed",
+                     "tools":  [
+                                   "predict_delay_risk",
+                                   "get_seller_history"
+                               ],
+                     "count":  2,
+                     "stop_reason":  "enough_information",
+                     "answer":  "The predicted risk for order be55f985440dddd650b389a55db8e49c is high, with a late delivery probability of approximately 85%. For seller 3078096983cf766a32a06257648502d1, their history shows a total of 55 orders with a historical late rate of about 5.56% and an average review score of 4.30."
+                 },
+    "ambiguous":  {
+                      "status":  "need_clarification",
+                      "tools":  [
+
+                                ],
+                      "count":  0,
+                      "stop_reason":  "clarification_required",
+                      "answer":  "Please specify whether you want to check the late delivery risk for order 123 or order 456, as the request is ambiguous."
+                  }
+}

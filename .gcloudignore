@@ -1,0 +1,27 @@
+# Never upload local credentials or machine-specific environments.
+.env
+.env.*
+!.env.example
+.venv/
+.git/
+.github/
+
+# Runtime artifacts are supplied by the checksum-documented compressed archive.
+data/
+models/
+
+# Development, training, reports, and the separate UI are not build inputs.
+reports/
+notebooks/
+tests/
+src/app/
+src/data/
+src/models/
+mlflow.db
+*.pyc
+**/__pycache__/
+
+# Local editor and test state.
+.vscode/
+.pytest_cache/
+

@@ -22,6 +22,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from src.features.feature_contract import CATEGORICAL_MODEL_FEATURES
+from src.observability import timed_operation
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -47,7 +48,8 @@ def _load_model_bundle() -> dict[str, Any]:
     """Load and validate the existing Phase 3 model artifact once."""
     if not MODEL_PATH.exists():
         raise FileNotFoundError(f"Saved model not found: {MODEL_PATH}")
-    bundle = joblib.load(MODEL_PATH)
+    with timed_operation("model_load", model_name="logistic_regression"):
+        bundle = joblib.load(MODEL_PATH)
     required_keys = {"model", "model_name", "model_features"}
     missing_keys = required_keys.difference(bundle)
     if missing_keys:
@@ -76,14 +78,15 @@ def _load_feature_dataset() -> pd.DataFrame:
         raise FileNotFoundError(
             f"Processed feature dataset not found: {FEATURE_DATASET_PATH}"
         )
-    return pd.read_csv(
-        FEATURE_DATASET_PATH,
-        parse_dates=[
-            "order_purchase_timestamp",
-            "order_delivered_customer_date",
-            "review_available_at",
-        ],
-    )
+    with timed_operation("feature_dataset_load"):
+        return pd.read_csv(
+            FEATURE_DATASET_PATH,
+            parse_dates=[
+                "order_purchase_timestamp",
+                "order_delivered_customer_date",
+                "review_available_at",
+            ],
+        )
 
 
 def _validated_order_row(order_id: str) -> tuple[pd.DataFrame | None, dict | None]:
@@ -145,7 +148,13 @@ def predict_delay_risk(order_id: str) -> dict[str, Any]:
 
     bundle = _load_model_bundle()
     features = _load_model_features()
-    probability = float(bundle["model"].predict_proba(order[features])[:, 1][0])
+    with timed_operation(
+        "model_prediction",
+        model_name=bundle["model_name"],
+    ):
+        probability = float(
+            bundle["model"].predict_proba(order[features])[:, 1][0]
+        )
     return {
         "ok": True,
         "order_id": order_id,

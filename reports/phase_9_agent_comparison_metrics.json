@@ -1,0 +1,99 @@
+{
+  "routing": {
+    "plain_python": {
+      "correct": 40,
+      "total": 40,
+      "accuracy": 1.0,
+      "latency": {
+        "average_ms": 1353.866,
+        "median_ms": 1239.61,
+        "minimum_ms": 792.69,
+        "maximum_ms": 3926.29
+      },
+      "incorrect_cases": [],
+      "source": "reports\\phase_9_plain_router_latency_checkpoint.json"
+    },
+    "langgraph": {
+      "correct": 40,
+      "total": 40,
+      "accuracy": 1.0,
+      "latency": {
+        "average_ms": 1043.8845724987914,
+        "median_ms": 1000.9578500175849
+      },
+      "incorrect_cases": [],
+      "source": "reports\\phase_9_langgraph_router_evaluation.json"
+    }
+  },
+  "full_agent": {
+    "plain_python": {
+      "latency": {
+        "average_ms": 3250.5363333427035,
+        "median_ms": 3681.1719000106677,
+        "minimum_ms": 909.0417000115849,
+        "maximum_ms": 5161.395400005858
+      },
+      "cases": [
+        {
+          "name": "direct_prediction",
+          "latency_ms": 3681.1719000106677,
+          "status": "completed",
+          "tool_call_count": 1,
+          "attempts": 1,
+          "error": null
+        },
+        {
+          "name": "conditional_explanation",
+          "latency_ms": 5161.395400005858,
+          "status": "completed",
+          "tool_call_count": 2,
+          "attempts": 1,
+          "error": null
+        },
+        {
+          "name": "clarification",
+          "latency_ms": 909.0417000115849,
+          "status": "need_clarification",
+          "tool_call_count": 0,
+          "attempts": 1,
+          "error": null
+        }
+      ]
+    },
+    "langgraph": {
+      "latency": {
+        "average_ms": 1888.6061333372102,
+        "median_ms": 1760.6274000136182,
+        "minimum_ms": 838.0577999923844,
+        "maximum_ms": 3067.133200005628
+      },
+      "cases": [
+        {
+          "name": "direct_prediction",
+          "latency_ms": 1760.6274000136182,
+          "status": "completed",
+          "tool_call_count": 1,
+          "attempts": 1,
+          "error": null
+        },
+        {
+          "name": "conditional_explanation",
+          "latency_ms": 3067.133200005628,
+          "status": "completed",
+          "tool_call_count": 2,
+          "attempts": 1,
+          "error": null
+        },
+        {
+          "name": "clarification",
+          "latency_ms": 838.0577999923844,
+          "status": "need_clarification",
+          "tool_call_count": 0,
+          "attempts": 1,
+          "error": null
+        }
+      ]
+    }
+  },
+  "total_measurement_seconds": 15.41781970000011
+}

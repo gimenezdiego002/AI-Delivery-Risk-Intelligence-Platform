@@ -1,0 +1,85 @@
+{
+  "environment": "docker_local",
+  "base_url": "http://127.0.0.1:8002",
+  "request_count_per_case": 3,
+  "client_retries": 0,
+  "cases": {
+    "health": {
+      "count": 3,
+      "average_ms": 20.799166668439284,
+      "median_ms": 28.04979999200441,
+      "p95_ms": 28.468400007113814,
+      "minimum_ms": 5.879300006199628,
+      "maximum_ms": 28.468400007113814,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    },
+    "prediction": {
+      "count": 3,
+      "average_ms": 46.181800008829065,
+      "median_ms": 48.207700019702315,
+      "p95_ms": 52.51099998713471,
+      "minimum_ms": 37.82670001965016,
+      "maximum_ms": 52.51099998713471,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    },
+    "explanation": {
+      "count": 3,
+      "average_ms": 42.35006665112451,
+      "median_ms": 35.79419999732636,
+      "p95_ms": 61.34979997295886,
+      "minimum_ms": 29.9061999830883,
+      "maximum_ms": 61.34979997295886,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    },
+    "seller_history": {
+      "count": 3,
+      "average_ms": 25.39396667270921,
+      "median_ms": 12.085199996363372,
+      "p95_ms": 54.46490002213977,
+      "minimum_ms": 9.63179999962449,
+      "maximum_ms": 54.46490002213977,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    },
+    "plain_agent": {
+      "count": 3,
+      "average_ms": 2997.6922333298717,
+      "median_ms": 2949.9462000094354,
+      "p95_ms": 3663.1153999769595,
+      "minimum_ms": 2380.01510000322,
+      "maximum_ms": 3663.1153999769595,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    },
+    "langgraph_direct": {
+      "count": 3,
+      "average_ms": 2606.590233326036,
+      "median_ms": 2539.733699988574,
+      "p95_ms": 2746.9536999997217,
+      "minimum_ms": 2533.083299989812,
+      "maximum_ms": 2746.9536999997217,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    },
+    "langgraph_two_tool": {
+      "count": 3,
+      "average_ms": 3548.2894999925825,
+      "median_ms": 3598.963600001298,
+      "p95_ms": 3623.7972999806516,
+      "minimum_ms": 3422.1075999957975,
+      "maximum_ms": 3623.7972999806516,
+      "error_count": 0,
+      "error_rate": 0.0,
+      "errors": []
+    }
+  }
+}

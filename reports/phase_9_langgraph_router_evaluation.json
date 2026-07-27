@@ -1,0 +1,43 @@
+{
+  "implementation": "langgraph",
+  "total_queries": 40,
+  "correct_queries": 40,
+  "tool_selection_accuracy": 1.0,
+  "per_tool": {
+    "explain_risk": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "average_latency_ms": 1272.5892000016756
+    },
+    "get_seller_history": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "average_latency_ms": 1219.8957000036899
+    },
+    "get_similar_past_orders": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "average_latency_ms": 1072.1737124986248
+    },
+    "need_clarification": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "average_latency_ms": 1111.855237501004
+    },
+    "predict_delay_risk": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "average_latency_ms": 1232.0651375011948
+    }
+  },
+  "clarification_accuracy": 1.0,
+  "incorrect_cases": [],
+  "average_latency_ms": 1181.7157975012378,
+  "median_latency_ms": 1092.8965499915648,
+  "total_evaluation_seconds": 47.3036882999877
+}

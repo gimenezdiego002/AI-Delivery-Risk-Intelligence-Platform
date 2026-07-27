@@ -1,0 +1,65 @@
+name: paid-live-agent-evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: OpenAI model used for the paid live evaluation
+        required: true
+        default: gpt-4o-mini
+
+permissions:
+  contents: read
+
+jobs:
+  live-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: live-agent-evaluation
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-api.txt
+
+      - name: Verify and restore immutable runtime artifacts
+        run: |
+          sha256sum --check artifacts/runtime_artifacts.sha256
+          tar -xzf artifacts/runtime_artifacts.tar.gz
+
+      - name: Install runtime dependencies
+        run: python -m pip install -r requirements-api.txt
+
+      - name: Run paid plain and LangGraph evaluations
+        env:
+          APP_ENV: test
+          LLM_PROVIDER: openai
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LLM_MODEL: ${{ inputs.model }}
+          LLM_TEMPERATURE: "0"
+          LLM_TIMEOUT_SECONDS: "30"
+          LLM_MAX_RETRIES: "2"
+          LLM_EVAL_DELAY_SECONDS: "1"
+        run: |
+          # Force a genuinely live run instead of resuming the committed
+          # Phase 5 row-level checkpoint.
+          rm -f reports/phase_5_router_predictions.csv
+          python -m src.agent.evaluate_router
+          python -m src.agent.evaluate_langgraph
+          python -m src.agent.evaluate_langgraph_multistep
+
+      - name: Preserve measured reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-agent-evaluation-reports
+          path: |
+            reports/phase_5_router_evaluation.json
+            reports/phase_9_langgraph_router_evaluation.json
+            reports/phase_9_langgraph_multistep_evaluation.json

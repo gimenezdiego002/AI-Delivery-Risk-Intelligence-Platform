@@ -1,0 +1,42 @@
+# Never copy local secrets or API keys into a Docker image.
+.env
+
+# Local virtual environments are large, machine-specific, and rebuilt in Docker.
+.venv/
+
+# Raw Kaggle files are large and not needed for API inference.
+data/raw/
+
+# Only the prepared feature table is required for runtime lookup/inference.
+data/processed/*
+!data/processed/delivery_features.csv
+
+# Only the selected production model and feature contract are runtime artifacts.
+models/*
+!models/best_delivery_risk_model.joblib
+!models/model_features.json
+
+# MLflow tracking database is experiment history, not runtime API state.
+mlflow.db
+
+# Reports and screenshots are portfolio artifacts, not runtime dependencies.
+reports/
+
+# Python bytecode caches are generated automatically and add noise.
+**/__pycache__/
+
+# Git history is unnecessary in the runtime image and can reveal repo metadata.
+.git/
+
+# Compiled Python files are environment-specific generated artifacts.
+*.pyc
+
+# Training, notebooks, tests, and the separate UI are not API runtime.
+notebooks/
+tests/
+src/data/
+src/models/
+src/app/
+
+# The image uses the runtime-only dependency list.
+requirements.txt

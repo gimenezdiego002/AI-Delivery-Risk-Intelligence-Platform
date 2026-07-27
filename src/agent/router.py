@@ -8,13 +8,23 @@ from __future__ import annotations
 
 import json
 import os
+import random
+import time
 from functools import lru_cache
+from time import perf_counter
 from typing import Any, Literal
 
 from dotenv import load_dotenv
 from google import genai
+from google.genai import errors as genai_errors
 from google.genai import types
-from openai import OpenAI
+from openai import (
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    OpenAI,
+    RateLimitError,
+)
 from pydantic import BaseModel, ValidationError, model_validator
 
 from src.agent.tools import (
@@ -23,6 +33,8 @@ from src.agent.tools import (
     get_similar_past_orders,
     predict_delay_risk,
 )
+from src.observability import emit_observation, measure_call
+from src.api.config import get_settings
 
 
 TOOL_REGISTRY: list[dict[str, Any]] = [
@@ -78,6 +90,22 @@ TOOL_FUNCTIONS = {
 
 class RouterError(RuntimeError):
     """Raised when the LLM cannot produce a valid routing decision."""
+
+
+class LLMTimeoutError(RouterError):
+    """Raised after bounded provider timeout retries are exhausted."""
+
+
+class LLMRateLimitError(RouterError):
+    """Raised after bounded provider rate-limit retries are exhausted."""
+
+
+class LLMInvalidResponseError(RouterError):
+    """Raised when structured-output correction is exhausted."""
+
+
+class LLMProviderError(RouterError):
+    """Raised for safe permanent or exhausted provider failures."""
 
 
 class ActionDecision(BaseModel):
@@ -144,8 +172,6 @@ class LoopDecision(BaseModel):
         elif self.status == "final_answer":
             if not self.final_answer:
                 raise ValueError("final_answer status requires final_answer")
-            if self.tool_name or self.order_id or self.seller_id:
-                raise ValueError("final_answer cannot include a tool call")
         else:
             if not self.clarification_question:
                 raise ValueError(
@@ -184,7 +210,14 @@ def _get_gemini_client() -> genai.Client:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise RouterError("GEMINI_API_KEY is not configured.")
-    return genai.Client(api_key=api_key)
+    settings = get_settings()
+    return genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(
+            timeout=int(settings.llm_timeout_seconds * 1_000),
+            retry_options=types.HttpRetryOptions(attempts=1),
+        ),
+    )
 
 
 @lru_cache(maxsize=1)
@@ -195,7 +228,13 @@ def _get_openai_client() -> OpenAI:
     if not api_key:
         raise RouterError("OPENAI_API_KEY is not configured.")
     base_url = os.getenv("OPENAI_BASE_URL") or None
-    return OpenAI(api_key=api_key, base_url=base_url)
+    settings = get_settings()
+    return OpenAI(
+        api_key=api_key,
+        base_url=base_url,
+        timeout=settings.llm_timeout_seconds,
+        max_retries=0,
+    )
 
 
 def _provider_name() -> str:
@@ -285,9 +324,77 @@ def _request_json(
     max_output_tokens: int = 1_000,
 ) -> str:
     """Request a JSON response from the configured provider."""
-    if _provider_name() == "openai":
-        return _request_openai_json(prompt, schema, max_output_tokens)
-    return _request_gemini_json(prompt, schema, max_output_tokens)
+    provider = _provider_name()
+    request_function = (
+        _request_openai_json if provider == "openai" else _request_gemini_json
+    )
+    settings = get_settings()
+    for attempt in range(settings.llm_max_retries + 1):
+        try:
+            response, _ = measure_call(
+                request_function,
+                prompt,
+                schema,
+                max_output_tokens,
+                event="llm_provider_call",
+                provider_call_kind=schema.__name__,
+                model_name=_model_name(),
+                retry_count=attempt,
+            )
+            return response
+        except Exception as exc:
+            category, retryable = _classify_provider_exception(exc)
+            if not retryable or attempt >= settings.llm_max_retries:
+                exception_type = {
+                    "llm_timeout": LLMTimeoutError,
+                    "llm_rate_limit": LLMRateLimitError,
+                }.get(category, LLMProviderError)
+                raise exception_type(
+                    f"{category}: provider request failed after "
+                    f"{attempt + 1} attempt(s)."
+                ) from exc
+
+            delay_seconds = min(0.5 * (2**attempt), 4.0) + random.uniform(
+                0.0, 0.25
+            )
+            emit_observation(
+                "llm_retry_scheduled",
+                level="warning",
+                error_category=category,
+                retry_count=attempt + 1,
+                latency_ms=round(delay_seconds * 1_000, 3),
+                provider_call_kind=schema.__name__,
+                model_name=_model_name(),
+            )
+            time.sleep(delay_seconds)
+    raise LLMProviderError("llm_provider_error: unreachable retry state.")
+
+
+def _classify_provider_exception(exc: Exception) -> tuple[str, bool]:
+    """Return safe category and whether a provider failure is transient."""
+    if isinstance(exc, (APITimeoutError, TimeoutError)):
+        return "llm_timeout", True
+    if isinstance(exc, RateLimitError):
+        return "llm_rate_limit", True
+    if isinstance(exc, APIConnectionError):
+        return "llm_provider_error", True
+
+    status_code = getattr(exc, "status_code", None)
+    if status_code is None:
+        status_code = getattr(exc, "code", None)
+    if isinstance(exc, genai_errors.ClientError) and status_code == 429:
+        return "llm_rate_limit", True
+    if isinstance(exc, (APIStatusError, genai_errors.APIError)):
+        if status_code == 429:
+            return "llm_rate_limit", True
+        if status_code in {408, 409, 500, 502, 503, 504}:
+            return "llm_provider_error", True
+        return "llm_provider_error", False
+    if status_code == 429:
+        return "llm_rate_limit", True
+    if status_code in {408, 409, 500, 502, 503, 504}:
+        return "llm_provider_error", True
+    return "llm_provider_error", False
 
 
 def _request_action(prompt: str) -> str:
@@ -395,6 +502,8 @@ Routing rules:
 - Similar/comparable/past-order questions use get_similar_past_orders.
 - If the required order_id or seller_id is absent or ambiguous, return
   need_clarification and ask for that identifier.
+- If multiple order IDs or seller IDs appear and the user does not clearly
+  specify which one to use, return need_clarification. Do not guess.
 - Phrases like "my order", "this order", "the order", or "it" are not valid
   identifiers. If no exact order_id is written in the query, return
   need_clarification.
@@ -428,7 +537,7 @@ User query:
             )
             if attempt == 1:
                 break
-    raise RouterError(
+    raise LLMInvalidResponseError(
         "The LLM failed to return a valid routing decision after one retry: "
         f"{last_error}"
     )
@@ -502,7 +611,7 @@ Rules:
             )
             if attempt == 1:
                 break
-    raise RouterError(
+    raise LLMInvalidResponseError(
         f"The LLM failed to return a valid loop decision after one retry: {last_error}"
     )
 
@@ -543,7 +652,7 @@ Return only JSON matching the supplied schema.
             correction = f"\nPrevious response invalid: {exc}. Return JSON only."
             if attempt == 1:
                 break
-    raise RouterError(
+    raise LLMInvalidResponseError(
         f"The LLM failed to return a grounded final answer after one retry: {last_error}"
     )
 
@@ -595,7 +704,16 @@ def run_agent(
             }
         seen_calls.add(call_signature)
 
+        started = perf_counter()
         result = TOOL_FUNCTIONS[tool_name](**arguments)
+        elapsed_ms = (perf_counter() - started) * 1_000
+        emit_observation(
+            "deterministic_tool_call",
+            selected_tool=tool_name,
+            latency_ms=round(elapsed_ms, 3),
+            outcome_ok=bool(result.get("ok", False)),
+            agent_implementation="plain_python",
+        )
         tool_call_count += 1
         trace.append(
             {
@@ -603,6 +721,7 @@ def run_agent(
                 "tool_name": tool_name,
                 "arguments": arguments,
                 "result": result,
+                "elapsed_ms": round(elapsed_ms, 3),
             }
         )
 

@@ -1,0 +1,46 @@
+{
+  "base_url": "http://127.0.0.1:8001",
+  "request_count_per_case": 3,
+  "cases": {
+    "direct_prediction": {
+      "request_count": 3,
+      "average_ms": 55.38653333011704,
+      "median_ms": 31.775499985087663,
+      "minimum_ms": 29.985600005602464,
+      "maximum_ms": 104.398499999661,
+      "client_retry_count": 0,
+      "last_status": "success",
+      "last_tool_call_count": null
+    },
+    "plain_agent_two_tool": {
+      "request_count": 3,
+      "average_ms": 7312.683699992097,
+      "median_ms": 5767.71899999585,
+      "minimum_ms": 4296.055199985858,
+      "maximum_ms": 11874.276899994584,
+      "client_retry_count": 0,
+      "last_status": "completed",
+      "last_tool_call_count": 2
+    },
+    "langgraph_direct": {
+      "request_count": 3,
+      "average_ms": 2390.6894333291953,
+      "median_ms": 2582.0686999941245,
+      "minimum_ms": 1983.155199995963,
+      "maximum_ms": 2606.844399997499,
+      "client_retry_count": 0,
+      "last_status": "completed",
+      "last_tool_call_count": 1
+    },
+    "langgraph_two_tool": {
+      "request_count": 3,
+      "average_ms": 3072.032333332269,
+      "median_ms": 3085.87159999297,
+      "minimum_ms": 3000.9951000101864,
+      "maximum_ms": 3129.230299993651,
+      "client_retry_count": 0,
+      "last_status": "completed",
+      "last_tool_call_count": 2
+    }
+  }
+}

@@ -1,0 +1,1807 @@
+{
+  "implementation": "langgraph",
+  "total_cases": 15,
+  "passed_cases": 15,
+  "all_passed": true,
+  "average_latency_ms": 3182.7684133313596,
+  "median_latency_ms": 2971.9029999978375,
+  "total_evaluation_seconds": 47.74531259998912,
+  "cases": [
+    {
+      "name": "order_risk_plus_seller_history",
+      "query": "Give the risk for order be55f985440dddd650b389a55db8e49c and the historical performance of seller 3078096983cf766a32a06257648502d1.",
+      "expected_tool_sequence": [
+        "predict_delay_risk",
+        "get_seller_history"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk",
+        "get_seller_history"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 4504.548099997919,
+      "answer": "The risk for order be55f985440dddd650b389a55db8e49c is classified as high, with a late delivery probability of approximately 85%. The historical performance of seller 3078096983cf766a32a06257648502d1 shows a total of 55 orders, with a late delivery rate of about 5.56% and an average review score of 4.30.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "threshold": 0.5
+          }
+        },
+        {
+          "tool_name": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "result": {
+            "ok": true,
+            "seller_id": "3078096983cf766a32a06257648502d1",
+            "as_of_order_id": "73c8f90c96ee59ece32c193b2755b800",
+            "history_cutoff": "2018-05-09T19:32:24",
+            "historical_order_volume": 55,
+            "historical_late_rate": 0.0555555555555555,
+            "historical_avg_review_score": 4.296296296296297,
+            "history_source": "precomputed Phase 2 leakage-safe features",
+            "leakage_rule": "Only information available strictly before history_cutoff is used; delivery outcomes require prior delivery and reviews require prior creation."
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_seller_history",
+              "order_id": null,
+              "seller_id": "3078096983cf766a32a06257648502d1",
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 2173.074
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 852.399
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "condition": "always",
+          "elapsed_ms": 1.049
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 7.302
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 1.002
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 1460.671
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "order_risk_plus_same_order_explanation",
+      "query": "Predict risk for order be55f985440dddd650b389a55db8e49c and explain that same order's risk.",
+      "expected_tool_sequence": [
+        "predict_delay_risk",
+        "explain_risk"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk",
+        "explain_risk"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 2971.9029999978375,
+      "answer": "The predicted risk for order be55f985440dddd650b389a55db8e49c is high, with a late delivery probability of approximately 85%. The risk is influenced by several factors: a long seller-customer distance, the seller's state (SP), the product category (home decor), and the historical late rate of the category. The customer's state (RN) slightly decreases the risk. Note that these associations are correlational and not causal.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "threshold": 0.5
+          }
+        },
+        {
+          "tool_name": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "explanations": [
+              {
+                "feature": "seller_customer_distance_km",
+                "actual_value": 2271.1026723286645,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 1.3933604596726858,
+                "approximate_magnitude": 1.3933604596726858
+              },
+              {
+                "feature": "seller_state",
+                "actual_value": "SP",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.4929806091216635,
+                "approximate_magnitude": 0.4929806091216635
+              },
+              {
+                "feature": "customer_state",
+                "actual_value": "RN",
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.24158772849493834,
+                "approximate_magnitude": 0.24158772849493834
+              },
+              {
+                "feature": "product_category_name",
+                "actual_value": "moveis_decoracao",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.24142087445912377,
+                "approximate_magnitude": 0.24142087445912377
+              },
+              {
+                "feature": "category_historical_late_rate",
+                "actual_value": 0.0907199334165626,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.1313447741989189,
+                "approximate_magnitude": 0.1313447741989189
+              }
+            ],
+            "summary": "The model assigned high late-delivery risk. Strongest positive model associations: seller_customer_distance_km, seller_state, product_category_name, category_historical_late_rate. Strongest negative model associations: customer_state. These are correlational model contributions, not causal effects.",
+            "caveat": "Model associations are correlational, not causal."
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "explain_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1226.318
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 19.278
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "condition": "always",
+          "elapsed_ms": 2.371
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 26.421
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 0.962
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 1688.966
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "order_risk_plus_similar_orders",
+      "query": "Predict risk for order be55f985440dddd650b389a55db8e49c, then retrieve similar past orders for it.",
+      "expected_tool_sequence": [
+        "predict_delay_risk",
+        "get_similar_past_orders"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk",
+        "get_similar_past_orders"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 4320.3821000061,
+      "answer": "The predicted risk for order be55f985440dddd650b389a55db8e49c is high, with a late delivery probability of approximately 85%. Similar past orders include: 1) Order 5062a18a32fe0f9975f7a1630a0a67dd - delivered on time; 2) Order 32cd70fe690fdbaa00076c05359c339c - was late; 3) Order 65c28faddc1bdb2d3d5de4f713de3f9a - delivered on time; 4) Order 455e1d46fddb5da406e019d2ad34462e - delivered on time; 5) Order a8a6ba331df6f7b1106abbc30489c428 - was late.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "threshold": 0.5
+          }
+        },
+        {
+          "tool_name": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "query_timestamp": "2018-05-12T18:59:59",
+            "candidate_rule": "Only orders delivered before the query order was placed are eligible.",
+            "similar_orders": [
+              {
+                "order_id": "5062a18a32fe0f9975f7a1630a0a67dd",
+                "similarity_distance": 2.5228439389478363,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-24T13:13:31",
+                "order_delivered_customer_date": "2018-04-14T01:52:24"
+              },
+              {
+                "order_id": "32cd70fe690fdbaa00076c05359c339c",
+                "similarity_distance": 2.555788303076514,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-07T21:50:59",
+                "order_delivered_customer_date": "2018-05-03T15:07:36"
+              },
+              {
+                "order_id": "65c28faddc1bdb2d3d5de4f713de3f9a",
+                "similarity_distance": 2.587814762690092,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-04-06T12:54:10",
+                "order_delivered_customer_date": "2018-04-24T18:29:49"
+              },
+              {
+                "order_id": "455e1d46fddb5da406e019d2ad34462e",
+                "similarity_distance": 2.6511731037866326,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-25T21:14:19",
+                "order_delivered_customer_date": "2018-04-17T19:47:27"
+              },
+              {
+                "order_id": "a8a6ba331df6f7b1106abbc30489c428",
+                "similarity_distance": 2.6631377964201866,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-01T18:33:04",
+                "order_delivered_customer_date": "2018-05-04T23:13:48"
+              }
+            ]
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_similar_past_orders",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1284.65
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 28.845
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "condition": "always",
+          "elapsed_ms": 1.676
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 423.576
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 1.181
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 2573.978
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "explanation_plus_seller_history",
+      "query": "Explain order be55f985440dddd650b389a55db8e49c, then show history for seller 3078096983cf766a32a06257648502d1.",
+      "expected_tool_sequence": [
+        "explain_risk",
+        "get_seller_history"
+      ],
+      "actual_tool_sequence": [
+        "explain_risk",
+        "get_seller_history"
+      ],
+      "expected_first_action": "explain_risk",
+      "actual_first_action": "explain_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 4011.4656000223476,
+      "answer": "The order be55f985440dddd650b389a55db8e49c has a high risk of late delivery, with a probability of 85%. Key factors contributing to this risk include a long distance from the seller to the customer, the seller's state (SP), the product category (home decor), and the seller's historical late delivery rate. The customer's state (RN) slightly decreases the risk. Note that these associations are correlational, not causal.\n\nFor seller 3078096983cf766a32a06257648502d1, the historical data shows they have processed 55 orders with a late delivery rate of 5.56% and an average review score of 4.30. This data is based on information available before May 9, 2018.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "explanations": [
+              {
+                "feature": "seller_customer_distance_km",
+                "actual_value": 2271.1026723286645,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 1.3933604596726858,
+                "approximate_magnitude": 1.3933604596726858
+              },
+              {
+                "feature": "seller_state",
+                "actual_value": "SP",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.4929806091216635,
+                "approximate_magnitude": 0.4929806091216635
+              },
+              {
+                "feature": "customer_state",
+                "actual_value": "RN",
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.24158772849493834,
+                "approximate_magnitude": 0.24158772849493834
+              },
+              {
+                "feature": "product_category_name",
+                "actual_value": "moveis_decoracao",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.24142087445912377,
+                "approximate_magnitude": 0.24142087445912377
+              },
+              {
+                "feature": "category_historical_late_rate",
+                "actual_value": 0.0907199334165626,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.1313447741989189,
+                "approximate_magnitude": 0.1313447741989189
+              }
+            ],
+            "summary": "The model assigned high late-delivery risk. Strongest positive model associations: seller_customer_distance_km, seller_state, product_category_name, category_historical_late_rate. Strongest negative model associations: customer_state. These are correlational model contributions, not causal effects.",
+            "caveat": "Model associations are correlational, not causal."
+          }
+        },
+        {
+          "tool_name": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "result": {
+            "ok": true,
+            "seller_id": "3078096983cf766a32a06257648502d1",
+            "as_of_order_id": "73c8f90c96ee59ece32c193b2755b800",
+            "history_cutoff": "2018-05-09T19:32:24",
+            "historical_order_volume": 55,
+            "historical_late_rate": 0.0555555555555555,
+            "historical_avg_review_score": 4.296296296296297,
+            "history_source": "precomputed Phase 2 leakage-safe features",
+            "leakage_rule": "Only information available strictly before history_cutoff is used; delivery outcomes require prior delivery and reviews require prior creation."
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "explain_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_seller_history",
+              "order_id": null,
+              "seller_id": "3078096983cf766a32a06257648502d1",
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1457.842
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 36.665
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "condition": "always",
+          "elapsed_ms": 2.623
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 8.746
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 1.229
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 2493.568
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "ambiguous_two_order_ids",
+      "query": "Is order 9694aa09499321709cdb542840ebbbb2 or order 43d6e5bfdbbfac022b7dad46056dfa64 late?",
+      "expected_tool_sequence": [],
+      "actual_tool_sequence": [],
+      "expected_first_action": "need_clarification",
+      "actual_first_action": "need_clarification",
+      "expected_final_status": "need_clarification",
+      "actual_final_status": "need_clarification",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": true,
+      "clarification_occurred": true,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 0,
+      "tool_call_cap_respected": true,
+      "stop_reason": "clarification_required",
+      "stop_reason_correct": true,
+      "tool_call_count": 0,
+      "latency_ms": 850.9920999931637,
+      "answer": "Please specify whether you want to check the late delivery risk for each order separately.",
+      "error": null,
+      "tool_results": [],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "need_clarification",
+          "selected_tool": null,
+          "arguments": {},
+          "planned_actions": [],
+          "elapsed_ms": 845.082
+        },
+        {
+          "node": "request_clarification",
+          "action": "need_clarification",
+          "elapsed_ms": 0.0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "two_order_ids_separate_tasks",
+      "query": "Predict order be55f985440dddd650b389a55db8e49c and explain order 9694aa09499321709cdb542840ebbbb2.",
+      "expected_tool_sequence": [
+        "predict_delay_risk",
+        "explain_risk"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk",
+        "explain_risk"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 3288.1632999924477,
+      "answer": "The order be55f985440dddd650b389a55db8e49c has a high risk of late delivery, with a probability of 85%. In contrast, order 9694aa09499321709cdb542840ebbbb2 has a low risk of late delivery, with a probability of 27.7%. The low risk is influenced by factors such as a longer estimated delivery time and the customer's state, which decrease the risk, while the seller's state and the category's historical late rate increase it. However, these associations are correlational and not causal.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "threshold": 0.5
+          }
+        },
+        {
+          "tool_name": "explain_risk",
+          "arguments": {
+            "order_id": "9694aa09499321709cdb542840ebbbb2"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "9694aa09499321709cdb542840ebbbb2",
+            "late_delivery_probability": 0.2774091489177385,
+            "risk_level": "low",
+            "model_name": "logistic_regression",
+            "explanations": [
+              {
+                "feature": "estimated_delivery_days",
+                "actual_value": 30.99848379629629,
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.5075017270285038,
+                "approximate_magnitude": 0.5075017270285038
+              },
+              {
+                "feature": "seller_state",
+                "actual_value": "SP",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.4929806091216635,
+                "approximate_magnitude": 0.4929806091216635
+              },
+              {
+                "feature": "customer_state",
+                "actual_value": "PR",
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.3404592063543163,
+                "approximate_magnitude": 0.3404592063543163
+              },
+              {
+                "feature": "payment_type",
+                "actual_value": "credit_card",
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.19497550792444432,
+                "approximate_magnitude": 0.19497550792444432
+              },
+              {
+                "feature": "category_historical_late_rate",
+                "actual_value": 0.0868285504047093,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.11993384479168476,
+                "approximate_magnitude": 0.11993384479168476
+              }
+            ],
+            "summary": "The model assigned low late-delivery risk. Strongest positive model associations: seller_state, category_historical_late_rate. Strongest negative model associations: estimated_delivery_days, customer_state, payment_type. These are correlational model contributions, not causal effects.",
+            "caveat": "Model associations are correlational, not causal."
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "explain_risk",
+              "order_id": "9694aa09499321709cdb542840ebbbb2",
+              "seller_id": null,
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1452.408
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 44.099
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "9694aa09499321709cdb542840ebbbb2"
+          },
+          "condition": "always",
+          "elapsed_ms": 1.305
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "9694aa09499321709cdb542840ebbbb2"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 20.993
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 0.967
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 1761.596
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "valid_order_and_seller_distinct_tasks",
+      "query": "Find similar past orders for order be55f985440dddd650b389a55db8e49c and get history for seller 3078096983cf766a32a06257648502d1.",
+      "expected_tool_sequence": [
+        "get_similar_past_orders",
+        "get_seller_history"
+      ],
+      "actual_tool_sequence": [
+        "get_similar_past_orders",
+        "get_seller_history"
+      ],
+      "expected_first_action": "get_similar_past_orders",
+      "actual_first_action": "get_similar_past_orders",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 6756.1847000033595,
+      "answer": "Similar past orders for order be55f985440dddd650b389a55db8e49c include:\n1. Order ID: 5062a18a32fe0f9975f7a1630a0a67dd - Delivered on 2018-04-14, not late.\n2. Order ID: 32cd70fe690fdbaa00076c05359c339c - Delivered on 2018-05-03, late.\n3. Order ID: 65c28faddc1bdb2d3d5de4f713de3f9a - Delivered on 2018-04-24, not late.\n4. Order ID: 455e1d46fddb5da406e019d2ad34462e - Delivered on 2018-04-17, not late.\n5. Order ID: a8a6ba331df6f7b1106abbc30489c428 - Delivered on 2018-05-04, late.\n\nFor seller 3078096983cf766a32a06257648502d1, the history shows:\n- Total historical order volume: 55\n- Historical late rate: 5.56%\n- Historical average review score: 4.30 (as of 2018-05-09).",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "query_timestamp": "2018-05-12T18:59:59",
+            "candidate_rule": "Only orders delivered before the query order was placed are eligible.",
+            "similar_orders": [
+              {
+                "order_id": "5062a18a32fe0f9975f7a1630a0a67dd",
+                "similarity_distance": 2.5228439389478363,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-24T13:13:31",
+                "order_delivered_customer_date": "2018-04-14T01:52:24"
+              },
+              {
+                "order_id": "32cd70fe690fdbaa00076c05359c339c",
+                "similarity_distance": 2.555788303076514,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-07T21:50:59",
+                "order_delivered_customer_date": "2018-05-03T15:07:36"
+              },
+              {
+                "order_id": "65c28faddc1bdb2d3d5de4f713de3f9a",
+                "similarity_distance": 2.587814762690092,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-04-06T12:54:10",
+                "order_delivered_customer_date": "2018-04-24T18:29:49"
+              },
+              {
+                "order_id": "455e1d46fddb5da406e019d2ad34462e",
+                "similarity_distance": 2.6511731037866326,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-25T21:14:19",
+                "order_delivered_customer_date": "2018-04-17T19:47:27"
+              },
+              {
+                "order_id": "a8a6ba331df6f7b1106abbc30489c428",
+                "similarity_distance": 2.6631377964201866,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-01T18:33:04",
+                "order_delivered_customer_date": "2018-05-04T23:13:48"
+              }
+            ]
+          }
+        },
+        {
+          "tool_name": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "result": {
+            "ok": true,
+            "seller_id": "3078096983cf766a32a06257648502d1",
+            "as_of_order_id": "73c8f90c96ee59ece32c193b2755b800",
+            "history_cutoff": "2018-05-09T19:32:24",
+            "historical_order_volume": 55,
+            "historical_late_rate": 0.0555555555555555,
+            "historical_avg_review_score": 4.296296296296297,
+            "history_source": "precomputed Phase 2 leakage-safe features",
+            "leakage_rule": "Only information available strictly before history_cutoff is used; delivery outcomes require prior delivery and reviews require prior creation."
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "get_similar_past_orders",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_seller_history",
+              "order_id": null,
+              "seller_id": "3078096983cf766a32a06257648502d1",
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1364.881
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 390.643
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "condition": "always",
+          "elapsed_ms": 2.656
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_seller_history",
+          "arguments": {
+            "seller_id": "3078096983cf766a32a06257648502d1"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 8.307
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 1.849
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 4980.515
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "missing_order_id",
+      "query": "Predict the late-delivery risk for my order.",
+      "expected_tool_sequence": [],
+      "actual_tool_sequence": [],
+      "expected_first_action": "need_clarification",
+      "actual_first_action": "need_clarification",
+      "expected_final_status": "need_clarification",
+      "actual_final_status": "need_clarification",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": true,
+      "clarification_occurred": true,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 0,
+      "tool_call_cap_respected": true,
+      "stop_reason": "clarification_required",
+      "stop_reason_correct": true,
+      "tool_call_count": 0,
+      "latency_ms": 1661.1586000071838,
+      "answer": "Please provide the exact order identifier for your order to predict the late-delivery risk.",
+      "error": null,
+      "tool_results": [],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "need_clarification",
+          "selected_tool": null,
+          "arguments": {},
+          "planned_actions": [],
+          "elapsed_ms": 1658.354
+        },
+        {
+          "node": "request_clarification",
+          "action": "need_clarification",
+          "elapsed_ms": 0.0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "missing_seller_id",
+      "query": "Show me the seller's historical delivery performance.",
+      "expected_tool_sequence": [],
+      "actual_tool_sequence": [],
+      "expected_first_action": "need_clarification",
+      "actual_first_action": "need_clarification",
+      "expected_final_status": "need_clarification",
+      "actual_final_status": "need_clarification",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": true,
+      "clarification_occurred": true,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 0,
+      "tool_call_cap_respected": true,
+      "stop_reason": "clarification_required",
+      "stop_reason_correct": true,
+      "tool_call_count": 0,
+      "latency_ms": 1819.0338999847881,
+      "answer": "Please provide the seller identifier to retrieve the seller's historical delivery performance.",
+      "error": null,
+      "tool_results": [],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "need_clarification",
+          "selected_tool": null,
+          "arguments": {},
+          "planned_actions": [],
+          "elapsed_ms": 1814.996
+        },
+        {
+          "node": "request_clarification",
+          "action": "need_clarification",
+          "elapsed_ms": 0.0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "unsupported_action",
+      "query": "Cancel the shipment and refund the customer.",
+      "expected_tool_sequence": [],
+      "actual_tool_sequence": [],
+      "expected_first_action": "need_clarification",
+      "actual_first_action": "need_clarification",
+      "expected_final_status": "need_clarification",
+      "actual_final_status": "need_clarification",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": true,
+      "clarification_occurred": true,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 0,
+      "tool_call_cap_respected": true,
+      "stop_reason": "clarification_required",
+      "stop_reason_correct": true,
+      "tool_call_count": 0,
+      "latency_ms": 1058.774999983143,
+      "answer": "The request to cancel a shipment and refund a customer is not supported. Please specify a delivery-risk related question or task, such as asking about the risk of a delivery being late or requesting seller history.",
+      "error": null,
+      "tool_results": [],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "need_clarification",
+          "selected_tool": null,
+          "arguments": {},
+          "planned_actions": [],
+          "elapsed_ms": 1054.734
+        },
+        {
+          "node": "request_clarification",
+          "action": "need_clarification",
+          "elapsed_ms": 0.0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "unknown_identifier_type",
+      "query": "Check A and B.",
+      "expected_tool_sequence": [],
+      "actual_tool_sequence": [],
+      "expected_first_action": "need_clarification",
+      "actual_first_action": "need_clarification",
+      "expected_final_status": "need_clarification",
+      "actual_final_status": "need_clarification",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": true,
+      "clarification_occurred": true,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 0,
+      "tool_call_cap_respected": true,
+      "stop_reason": "clarification_required",
+      "stop_reason_correct": true,
+      "tool_call_count": 0,
+      "latency_ms": 955.1241000008304,
+      "answer": "Please specify the exact tasks you want to perform for orders A and B, as well as their identifiers.",
+      "error": null,
+      "tool_results": [],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "need_clarification",
+          "selected_tool": null,
+          "arguments": {},
+          "planned_actions": [],
+          "elapsed_ms": 952.09
+        },
+        {
+          "node": "request_clarification",
+          "action": "need_clarification",
+          "elapsed_ms": 0.0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "compound_first_tool_error",
+      "query": "Predict order ffffffffffffffffffffffffffffffff and then show history for seller 3078096983cf766a32a06257648502d1.",
+      "expected_tool_sequence": [
+        "predict_delay_risk"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "error",
+      "actual_final_status": "error",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 1,
+      "tool_call_cap_respected": true,
+      "stop_reason": "error",
+      "stop_reason_correct": true,
+      "tool_call_count": 1,
+      "latency_ms": 1361.6970999864861,
+      "answer": "Order 'ffffffffffffffffffffffffffffffff' does not exist in the processed dataset.",
+      "error": {
+        "code": "order_not_found",
+        "message": "Order 'ffffffffffffffffffffffffffffffff' does not exist in the processed dataset."
+      },
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "ffffffffffffffffffffffffffffffff"
+          },
+          "result": {
+            "ok": false,
+            "error": {
+              "code": "order_not_found",
+              "message": "Order 'ffffffffffffffffffffffffffffffff' does not exist in the processed dataset."
+            },
+            "order_id": "ffffffffffffffffffffffffffffffff"
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "ffffffffffffffffffffffffffffffff"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "ffffffffffffffffffffffffffffffff",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_seller_history",
+              "order_id": null,
+              "seller_id": "3078096983cf766a32a06257648502d1",
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1355.041
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "ffffffffffffffffffffffffffffffff"
+          },
+          "outcome_ok": false,
+          "elapsed_ms": 3.234
+        },
+        {
+          "node": "handle_error",
+          "action": "error",
+          "elapsed_ms": 0.0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "tool_call_cap",
+      "query": "For order be55f985440dddd650b389a55db8e49c predict risk, explain risk, find similar orders, and then show history for seller 3078096983cf766a32a06257648502d1.",
+      "expected_tool_sequence": [
+        "predict_delay_risk",
+        "explain_risk",
+        "get_similar_past_orders"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk",
+        "explain_risk",
+        "get_similar_past_orders"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 3,
+      "tool_call_cap_respected": true,
+      "stop_reason": "max_tool_calls_reached",
+      "stop_reason_correct": true,
+      "tool_call_count": 3,
+      "latency_ms": 3947.4222999997437,
+      "answer": "The predicted risk for order be55f985440dddd650b389a55db8e49c is high, with a late delivery probability of approximately 85%. The risk is influenced by factors such as the distance between the seller and customer, the seller's state, the product category, and the historical late rate of the category. Similar past orders include five orders, two of which were late, while three were delivered on time.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "threshold": 0.5
+          }
+        },
+        {
+          "tool_name": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "explanations": [
+              {
+                "feature": "seller_customer_distance_km",
+                "actual_value": 2271.1026723286645,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 1.3933604596726858,
+                "approximate_magnitude": 1.3933604596726858
+              },
+              {
+                "feature": "seller_state",
+                "actual_value": "SP",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.4929806091216635,
+                "approximate_magnitude": 0.4929806091216635
+              },
+              {
+                "feature": "customer_state",
+                "actual_value": "RN",
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.24158772849493834,
+                "approximate_magnitude": 0.24158772849493834
+              },
+              {
+                "feature": "product_category_name",
+                "actual_value": "moveis_decoracao",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.24142087445912377,
+                "approximate_magnitude": 0.24142087445912377
+              },
+              {
+                "feature": "category_historical_late_rate",
+                "actual_value": 0.0907199334165626,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.1313447741989189,
+                "approximate_magnitude": 0.1313447741989189
+              }
+            ],
+            "summary": "The model assigned high late-delivery risk. Strongest positive model associations: seller_customer_distance_km, seller_state, product_category_name, category_historical_late_rate. Strongest negative model associations: customer_state. These are correlational model contributions, not causal effects.",
+            "caveat": "Model associations are correlational, not causal."
+          }
+        },
+        {
+          "tool_name": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "query_timestamp": "2018-05-12T18:59:59",
+            "candidate_rule": "Only orders delivered before the query order was placed are eligible.",
+            "similar_orders": [
+              {
+                "order_id": "5062a18a32fe0f9975f7a1630a0a67dd",
+                "similarity_distance": 2.5228439389478363,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-24T13:13:31",
+                "order_delivered_customer_date": "2018-04-14T01:52:24"
+              },
+              {
+                "order_id": "32cd70fe690fdbaa00076c05359c339c",
+                "similarity_distance": 2.555788303076514,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-07T21:50:59",
+                "order_delivered_customer_date": "2018-05-03T15:07:36"
+              },
+              {
+                "order_id": "65c28faddc1bdb2d3d5de4f713de3f9a",
+                "similarity_distance": 2.587814762690092,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-04-06T12:54:10",
+                "order_delivered_customer_date": "2018-04-24T18:29:49"
+              },
+              {
+                "order_id": "455e1d46fddb5da406e019d2ad34462e",
+                "similarity_distance": 2.6511731037866326,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-25T21:14:19",
+                "order_delivered_customer_date": "2018-04-17T19:47:27"
+              },
+              {
+                "order_id": "a8a6ba331df6f7b1106abbc30489c428",
+                "similarity_distance": 2.6631377964201866,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-01T18:33:04",
+                "order_delivered_customer_date": "2018-05-04T23:13:48"
+              }
+            ]
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "explain_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_similar_past_orders",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_seller_history",
+              "order_id": null,
+              "seller_id": "3078096983cf766a32a06257648502d1",
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1978.548
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 17.964
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "condition": "always",
+          "elapsed_ms": 1.192
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 19.467
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "condition": "always",
+          "elapsed_ms": 0.991
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 362.627
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "max_tool_calls_reached",
+          "elapsed_ms": 0.969
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 1560.216
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "single_tool_completion",
+      "query": "Predict late-delivery risk for order be55f985440dddd650b389a55db8e49c.",
+      "expected_tool_sequence": [
+        "predict_delay_risk"
+      ],
+      "actual_tool_sequence": [
+        "predict_delay_risk"
+      ],
+      "expected_first_action": "predict_delay_risk",
+      "actual_first_action": "predict_delay_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 1,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 1,
+      "latency_ms": 2241.0415000049397,
+      "answer": "The late-delivery risk for order be55f985440dddd650b389a55db8e49c is high, with a probability of 85.00%.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "threshold": 0.5
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "predict_delay_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 1037.655
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "predict_delay_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 19.622
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 1.228
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 1178.448
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "two_tool_completion",
+      "query": "Explain risk for order be55f985440dddd650b389a55db8e49c and then find similar past orders for that same order.",
+      "expected_tool_sequence": [
+        "explain_risk",
+        "get_similar_past_orders"
+      ],
+      "actual_tool_sequence": [
+        "explain_risk",
+        "get_similar_past_orders"
+      ],
+      "expected_first_action": "explain_risk",
+      "actual_first_action": "explain_risk",
+      "expected_final_status": "completed",
+      "actual_final_status": "completed",
+      "first_action_correct": true,
+      "sequence_correct": true,
+      "status_correct": true,
+      "grounded": true,
+      "clarification_expected": false,
+      "clarification_occurred": false,
+      "clarification_correct": true,
+      "maximum_allowed_tool_calls": 2,
+      "tool_call_cap_respected": true,
+      "stop_reason": "enough_information",
+      "stop_reason_correct": true,
+      "tool_call_count": 2,
+      "latency_ms": 7993.6347999901045,
+      "answer": "The order be55f985440dddd650b389a55db8e49c has a high risk of late delivery, with a probability of 85%. Factors contributing to this risk include a long distance from the seller to the customer, the seller's state, the product category, and the historical late rate of the category. The customer\u2019s state slightly decreases the risk. Note that these associations are correlational, not causal. \n\nSimilar past orders include:\n1. Order ID: 5062a18a32fe0f9975f7a1630a0a67dd - Delivered on time.\n2. Order ID: 32cd70fe690fdbaa00076c05359c339c - Was late.\n3. Order ID: 65c28faddc1bdb2d3d5de4f713de3f9a - Delivered on time.\n4. Order ID: 455e1d46fddb5da406e019d2ad34462e - Delivered on time.\n5. Order ID: a8a6ba331df6f7b1106abbc30489c428 - Was late.",
+      "error": null,
+      "tool_results": [
+        {
+          "tool_name": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "late_delivery_probability": 0.8500189058886447,
+            "risk_level": "high",
+            "model_name": "logistic_regression",
+            "explanations": [
+              {
+                "feature": "seller_customer_distance_km",
+                "actual_value": 2271.1026723286645,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 1.3933604596726858,
+                "approximate_magnitude": 1.3933604596726858
+              },
+              {
+                "feature": "seller_state",
+                "actual_value": "SP",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.4929806091216635,
+                "approximate_magnitude": 0.4929806091216635
+              },
+              {
+                "feature": "customer_state",
+                "actual_value": "RN",
+                "direction": "decreases_risk",
+                "signed_log_odds_contribution": -0.24158772849493834,
+                "approximate_magnitude": 0.24158772849493834
+              },
+              {
+                "feature": "product_category_name",
+                "actual_value": "moveis_decoracao",
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.24142087445912377,
+                "approximate_magnitude": 0.24142087445912377
+              },
+              {
+                "feature": "category_historical_late_rate",
+                "actual_value": 0.0907199334165626,
+                "direction": "increases_risk",
+                "signed_log_odds_contribution": 0.1313447741989189,
+                "approximate_magnitude": 0.1313447741989189
+              }
+            ],
+            "summary": "The model assigned high late-delivery risk. Strongest positive model associations: seller_customer_distance_km, seller_state, product_category_name, category_historical_late_rate. Strongest negative model associations: customer_state. These are correlational model contributions, not causal effects.",
+            "caveat": "Model associations are correlational, not causal."
+          }
+        },
+        {
+          "tool_name": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "result": {
+            "ok": true,
+            "order_id": "be55f985440dddd650b389a55db8e49c",
+            "query_timestamp": "2018-05-12T18:59:59",
+            "candidate_rule": "Only orders delivered before the query order was placed are eligible.",
+            "similar_orders": [
+              {
+                "order_id": "5062a18a32fe0f9975f7a1630a0a67dd",
+                "similarity_distance": 2.5228439389478363,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-24T13:13:31",
+                "order_delivered_customer_date": "2018-04-14T01:52:24"
+              },
+              {
+                "order_id": "32cd70fe690fdbaa00076c05359c339c",
+                "similarity_distance": 2.555788303076514,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-07T21:50:59",
+                "order_delivered_customer_date": "2018-05-03T15:07:36"
+              },
+              {
+                "order_id": "65c28faddc1bdb2d3d5de4f713de3f9a",
+                "similarity_distance": 2.587814762690092,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-04-06T12:54:10",
+                "order_delivered_customer_date": "2018-04-24T18:29:49"
+              },
+              {
+                "order_id": "455e1d46fddb5da406e019d2ad34462e",
+                "similarity_distance": 2.6511731037866326,
+                "was_late": false,
+                "order_purchase_timestamp": "2018-03-25T21:14:19",
+                "order_delivered_customer_date": "2018-04-17T19:47:27"
+              },
+              {
+                "order_id": "a8a6ba331df6f7b1106abbc30489c428",
+                "similarity_distance": 2.6631377964201866,
+                "was_late": true,
+                "order_purchase_timestamp": "2018-04-01T18:33:04",
+                "order_delivered_customer_date": "2018-05-04T23:13:48"
+              }
+            ]
+          }
+        }
+      ],
+      "trace": [
+        {
+          "node": "route_request",
+          "action": "tool_call",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "planned_actions": [
+            {
+              "tool_name": "explain_risk",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            },
+            {
+              "tool_name": "get_similar_past_orders",
+              "order_id": "be55f985440dddd650b389a55db8e49c",
+              "seller_id": null,
+              "condition": "always"
+            }
+          ],
+          "elapsed_ms": 3995.647
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "explain_risk",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 19.368
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "tool_call",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "condition": "always",
+          "elapsed_ms": 1.161
+        },
+        {
+          "node": "execute_tool",
+          "action": "tool_result",
+          "selected_tool": "get_similar_past_orders",
+          "arguments": {
+            "order_id": "be55f985440dddd650b389a55db8e49c"
+          },
+          "outcome_ok": true,
+          "elapsed_ms": 367.234
+        },
+        {
+          "node": "evaluate_tool_result",
+          "action": "final_answer",
+          "reason": "planned_actions_complete",
+          "elapsed_ms": 1.578
+        },
+        {
+          "node": "generate_final_answer",
+          "action": "completed",
+          "elapsed_ms": 3602.889
+        }
+      ],
+      "passed": true
+    }
+  ]
+}

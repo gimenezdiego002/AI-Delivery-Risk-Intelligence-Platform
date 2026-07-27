@@ -5,25 +5,36 @@ A portfolio-ready data science project that answers:
 > Which orders are at risk of late delivery right now, and why?
 
 The project uses the Brazilian E-Commerce (Olist) dataset to build an
-order-level late-delivery classifier and a plain-Python AI agent router that
-can answer natural-language delivery-risk questions with grounded tool calls.
+order-level late-delivery classifier, deterministic analysis tools, and two
+agent orchestration implementations that answer natural-language questions
+with grounded tool calls.
 
-## Current status: Phases 1-5 complete
+## Current status: Phase 10 implementation complete, public deployment pending
 
 Phase 1 created the reproducible order-level data foundation. Phase 2 added
 leakage-safe features and a Logistic Regression baseline. Phase 3 compares that
 baseline with Random Forest and XGBoost on the same future test period and
 tracks every experiment with MLflow. Phase 4 exposes deterministic prediction,
-explanation, seller-history, and similar-order tools. Phase 5 adds a
-plain-Python LLM router on top of those tools and verifies first-tool selection
-on a labeled evaluation set.
+explanation, seller-history, and similar-order tools. Phases 5-8 add a
+plain-Python LLM router, FastAPI, Streamlit, and Docker. Phase 9 adds an
+alternative LangGraph workflow while preserving the original router.
+Phase 10 adds typed runtime configuration, structured JSON logs, request/trace
+IDs, latency instrumentation, bounded provider retries, API-key
+authentication, rate limiting, a runtime-only container, readiness checks, and
+separate deterministic/live CI workflows. The repository is ready for Cloud
+Run, but no public URL is claimed because project, billing, and secret-store
+access still require the owner's action.
 
-Phase 5 router result:
+Verified agent results:
 
 - Model/provider used for evaluation: OpenAI `gpt-4o-mini`
 - Labeled natural-language queries: 40
-- Tool-selection accuracy: 40/40, or 100%
-- Saved result: `reports/phase_5_router_evaluation.json`
+- Plain-Python tool-selection accuracy: 40/40
+- LangGraph tool-selection accuracy: 40/40
+- LangGraph adversarial full-workflow evaluation: 15/15
+- Automated repository tests: 63 passed
+- Separate LangGraph API route: `POST /agent/langgraph/query`
+- Saved comparison: `reports/phase_9_plain_python_vs_langgraph.md`
 
 The LLM does not generate the delivery-risk prediction itself. It only decides
 which tested Python tool to call, then final answers are grounded in the actual
@@ -41,9 +52,9 @@ tool outputs.
 |   |-- data/                # Loading and dataset-building code
 |   |-- features/            # Feature engineering and leakage contract
 |   |-- models/              # Model training and evaluation
-|   |-- agent/               # Deterministic tools and LLM router
-|   |-- api/                 # Future FastAPI service
-|   `-- app/                 # Future Streamlit application
+|   |-- agent/               # Tools, plain router, and LangGraph workflow
+|   |-- api/                 # FastAPI service
+|   `-- app/                 # Streamlit HTTP client
 |-- reports/                 # Figures and written analysis
 |-- models/                  # Saved model artifacts (not committed)
 |-- Download_Data.py         # Downloads/copies raw data
@@ -223,8 +234,8 @@ an online feature-construction path in a later deployment phase.
 ## Phase 5 LLM router
 
 Phase 5 lives in `src/agent/router.py` and adds a visible, framework-free agent
-loop. It intentionally does not use LangChain, LangGraph, CrewAI, FastAPI, or
-Streamlit yet. The control flow is plain Python so it is easy to debug and
+loop. That implementation intentionally does not use LangChain, LangGraph, or
+CrewAI. The control flow is plain Python so it is easy to debug, compare, and
 explain in interviews.
 
 The router has three core pieces:
@@ -270,6 +281,193 @@ Overall: **40/40 correct tool selections** using OpenAI `gpt-4o-mini`.
 
 Phase 5 details are documented in `reports/phase_5_explicit.md`.
 
+## Phases 6-8: API, demo, and Docker
+
+Start the FastAPI service:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn src.api.main:app --reload
+```
+
+Open `http://127.0.0.1:8000/docs` for the generated API documentation.
+Interactive docs are intentionally disabled when `APP_ENV=production`.
+
+In another terminal, start Streamlit:
+
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run src/app/streamlit_app.py
+```
+
+The UI calls FastAPI over HTTP and does not import the model tools or router.
+
+Build and run the backend container:
+
+```powershell
+docker build -t delivery-risk-api .
+docker run --env-file .env -p 8000:8000 delivery-risk-api
+```
+
+The `.dockerignore` prevents `.env`, raw data, reports, Git history, and the
+local virtual environment from entering the image.
+
+When authentication is enabled, protected requests need the server-side
+`X-API-Key` header:
+
+```powershell
+$headers = @{ "X-API-Key" = $env:API_KEY }
+Invoke-RestMethod -Headers $headers `
+  http://127.0.0.1:8000/orders/be55f985440dddd650b389a55db8e49c/risk
+```
+
+The prediction API only accepts order IDs represented in the prepared
+`delivery_features.csv` inference table. It does not yet construct features
+for brand-new commerce events.
+
+## Phase 9 LangGraph orchestration
+
+Phase 9 adds `src/agent/langgraph_agent.py` without replacing
+`src/agent/router.py`.
+
+```mermaid
+flowchart TD
+    A[User query] --> B{route_request}
+    B -->|tool| C[execute_tool]
+    B -->|clarify| D[request_clarification]
+    B -->|error| E[handle_error]
+    C --> F{evaluate_tool_result}
+    F -->|another tool| C
+    F -->|enough evidence| G[generate_final_answer]
+    F -->|clarify| D
+    F -->|error| E
+    G --> H[Final response]
+    D --> H
+    E --> H
+```
+
+Only these deterministic functions can execute:
+
+- `predict_delay_risk(order_id)`
+- `explain_risk(order_id)`
+- `get_seller_history(seller_id)`
+- `get_similar_past_orders(order_id)`
+
+Run the tests:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Run the measured evaluations; these commands make paid LLM API calls:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.agent.evaluate_langgraph
+.\.venv\Scripts\python.exe -m src.agent.evaluate_langgraph_multistep
+```
+
+Measured comparison:
+
+| Metric | Plain Python | LangGraph |
+|---|---:|---:|
+| First-tool accuracy | 40/40 | 40/40 |
+| Average first-route latency | 1,353.87 ms | 1,043.88 ms |
+| Median first-route latency | 1,239.61 ms | 1,000.96 ms |
+| Adversarial full workflows | Not separately saved | 15/15 |
+
+The current recommendation is to keep plain Python as the default for this
+small workflow and retain LangGraph as the explicit orchestration alternative.
+The original LangGraph workflow evaluation progressed from 2/7 to 6/7. Phase
+9.1 traced the final failure to a single-action decision schema that could not
+preserve two separate task-to-identifier associations. The validated ordered
+action plan now passes an expanded 15/15 adversarial set. This history is
+preserved in the reports rather than overwritten.
+
+The existing Streamlit path still calls the plain router. The verified
+LangGraph alternative is available separately:
+
+```text
+POST /agent/langgraph/query
+```
+
+Detailed reports:
+
+- `reports/phase_9_existing_agent_audit.md`
+- `reports/phase_9_explicit.md`
+- `reports/phase_9_plain_python_vs_langgraph.md`
+
+## Phase 10 production hardening
+
+The public production surface is:
+
+- `GET /health` — cheap process liveness; public
+- `GET /ready` — verifies model, 23-feature contract, and inference table;
+  public and never calls an LLM
+- `GET /orders/{order_id}/risk` — deterministic, authenticated
+- `GET /orders/{order_id}/explanation` — deterministic, authenticated
+- `GET /sellers/{seller_id}/history` — deterministic, authenticated
+- `POST /agent/query` — default plain-Python agent, authenticated and paid
+- `POST /agent/langgraph/query` — alternative LangGraph agent, authenticated
+  and paid
+
+Production logs are JSON and contain request IDs, agent trace IDs, route,
+status, latency, tool names, retry counts, and safe error categories. They do
+not log API keys, authorization headers, raw feature rows, or hidden reasoning.
+
+Runtime configuration is documented in `.env.example`. Important production
+variables include:
+
+```env
+APP_ENV=production
+LOG_LEVEL=INFO
+LLM_PROVIDER=openai
+OPENAI_API_KEY=stored-in-a-secret-manager
+LLM_MODEL=gpt-4o-mini
+LLM_TIMEOUT_SECONDS=30
+LLM_MAX_RETRIES=2
+API_AUTH_ENABLED=true
+API_KEY=stored-in-a-secret-manager
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_REQUESTS=60
+RATE_LIMIT_LLM_REQUESTS=10
+RATE_LIMIT_WINDOW_SECONDS=60
+CORS_ALLOWED_ORIGINS=
+```
+
+For the current server-side Streamlit client, browser CORS is unnecessary.
+Streamlit reads `API_BASE_URL` and `API_KEY` from its environment or server-side
+secrets and adds the key to backend HTTP requests.
+
+The optimized backend image is **205,317,857 bytes**, down from 872,320,892
+bytes (**76.46% smaller**), runs as non-root UID 10001, and reproduces the
+verified order probability exactly:
+
+```text
+order: be55f985440dddd650b389a55db8e49c
+probability: 0.8500189058886447
+risk: high
+threshold: 0.5
+```
+
+CI is configured in `.github/workflows/ci.yml` for deterministic, non-paid
+tests and Docker builds. `.github/workflows/live-agent-evaluation.yml` is a
+separate manual, secret-dependent paid evaluation. The local equivalent of the
+deterministic workflow passed 63 tests; GitHub-hosted CI has **not** been run
+yet and is not represented as passing.
+
+Cloud Run was selected after comparing Cloud Run, Render, Railway, and Fly.io.
+Exact deployment steps are in `deploy/cloud-run/README.md`. Deployment remains
+pending until the owner supplies a billed Google Cloud project, authenticated
+CLI access, and Secret Manager values. Until then, there is no live API link,
+public latency, or activated uptime monitor.
+
+Phase 10 evidence:
+
+- `reports/phase_10_production_audit.md`
+- `reports/phase_10_security_verification.md`
+- `reports/phase_10_deployment_decision.md`
+- `reports/phase_10_monitoring.md`
+- `reports/phase_10_performance.md`
+- `reports/phase_10_explicit.md`
+
 ## Dataset source
 
 Brazilian E-Commerce Public Dataset by Olist, distributed through Kaggle. Raw
@@ -282,5 +480,9 @@ and processed data are excluded from Git because they are large and reproducible
 - **Phase 3:** Random Forest/XGBoost comparison tracked with MLflow (complete)
 - **Phase 4:** deterministic prediction, explanations, history, and similarity tools (complete)
 - **Phase 5:** plain-Python LLM router and labeled tool-selection evaluation (complete)
-- **Phase 6:** FastAPI endpoints exposing the existing tools and `run_agent` (next)
-- **Later:** Streamlit demo, Docker, performance testing, deployment, and review-text embeddings
+- **Phase 6:** FastAPI endpoints exposing the tools and `run_agent` (complete)
+- **Phase 7:** Streamlit portfolio demo over HTTP (complete)
+- **Phase 8:** FastAPI Docker container and performance checks (complete)
+- **Phase 9/9.1:** additive LangGraph orchestration, ordered multi-tool plans, 15/15 adversarial evaluation, separate API endpoint, and Docker verification (complete)
+- **Phase 10:** repository implementation complete; Cloud Run deployment,
+  public validation, and uptime activation pending user-owned cloud access
