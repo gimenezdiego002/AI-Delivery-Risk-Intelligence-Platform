@@ -5,16 +5,29 @@ A portfolio-ready data science project that answers:
 > Which orders are at risk of late delivery right now, and why?
 
 The project uses the Brazilian E-Commerce (Olist) dataset to build an
-order-level late-delivery classifier and, in later phases, an AI agent that can
-explain order, seller, and product-category risk.
+order-level late-delivery classifier and a plain-Python AI agent router that
+can answer natural-language delivery-risk questions with grounded tool calls.
 
-## Current status: Phase 4 complete
+## Current status: Phases 1-5 complete
 
 Phase 1 created the reproducible order-level data foundation. Phase 2 added
 leakage-safe features and a Logistic Regression baseline. Phase 3 compares that
 baseline with Random Forest and XGBoost on the same future test period and
 tracks every experiment with MLflow. Phase 4 exposes deterministic prediction,
-explanation, seller-history, and similar-order tools without an LLM.
+explanation, seller-history, and similar-order tools. Phase 5 adds a
+plain-Python LLM router on top of those tools and verifies first-tool selection
+on a labeled evaluation set.
+
+Phase 5 router result:
+
+- Model/provider used for evaluation: OpenAI `gpt-4o-mini`
+- Labeled natural-language queries: 40
+- Tool-selection accuracy: 40/40, or 100%
+- Saved result: `reports/phase_5_router_evaluation.json`
+
+The LLM does not generate the delivery-risk prediction itself. It only decides
+which tested Python tool to call, then final answers are grounded in the actual
+tool outputs.
 
 ## Project structure
 
@@ -28,7 +41,7 @@ explanation, seller-history, and similar-order tools without an LLM.
 |   |-- data/                # Loading and dataset-building code
 |   |-- features/            # Feature engineering and leakage contract
 |   |-- models/              # Model training and evaluation
-|   |-- agent/               # Future agent tools
+|   |-- agent/               # Deterministic tools and LLM router
 |   |-- api/                 # Future FastAPI service
 |   `-- app/                 # Future Streamlit application
 |-- reports/                 # Figures and written analysis
@@ -207,6 +220,56 @@ All tools currently operate on order IDs already present in the prepared
 historical feature dataset. Predicting a genuinely new live order will require
 an online feature-construction path in a later deployment phase.
 
+## Phase 5 LLM router
+
+Phase 5 lives in `src/agent/router.py` and adds a visible, framework-free agent
+loop. It intentionally does not use LangChain, LangGraph, CrewAI, FastAPI, or
+Streamlit yet. The control flow is plain Python so it is easy to debug and
+explain in interviews.
+
+The router has three core pieces:
+
+- `TOOL_REGISTRY`: describes the four available tools, when to use each one,
+  and which argument is required.
+- `decide_action(user_query, registry)`: asks the configured LLM to return
+  strict JSON choosing one tool and argument, or `need_clarification` when the
+  query is missing an order ID or seller ID.
+- `run_agent(user_query)`: executes the chosen tool, optionally loops back for
+  one or two more tool calls, and stops after a hard cap of 3 tool calls to
+  prevent infinite loops or runaway API usage.
+
+Supported providers are configured through `.env`:
+
+```env
+LLM_PROVIDER=openai
+OPENAI_API_KEY=your-real-openai-api-key
+LLM_MODEL=gpt-4o-mini
+LLM_TEMPERATURE=0
+LLM_MAX_TOOL_CALLS=3
+```
+
+Never commit `.env`; use `.env.example` as the safe template.
+
+Run the first-tool routing evaluation:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.agent.evaluate_router
+```
+
+Current saved evaluation:
+
+| Expected tool | Correct | Total | Accuracy |
+|---|---:|---:|---:|
+| `predict_delay_risk` | 8 | 8 | 100% |
+| `explain_risk` | 8 | 8 | 100% |
+| `get_seller_history` | 8 | 8 | 100% |
+| `get_similar_past_orders` | 8 | 8 | 100% |
+| `need_clarification` | 8 | 8 | 100% |
+
+Overall: **40/40 correct tool selections** using OpenAI `gpt-4o-mini`.
+
+Phase 5 details are documented in `reports/phase_5_explicit.md`.
+
 ## Dataset source
 
 Brazilian E-Commerce Public Dataset by Olist, distributed through Kaggle. Raw
@@ -218,5 +281,6 @@ and processed data are excluded from Git because they are large and reproducible
 - **Phase 2:** leakage-safe features and Logistic Regression baseline (complete)
 - **Phase 3:** Random Forest/XGBoost comparison tracked with MLflow (complete)
 - **Phase 4:** deterministic prediction, explanations, history, and similarity tools (complete)
-- **Phase 5:** labeled-query tool-routing evaluation without moving business logic into an LLM
-- **Phase 6:** FastAPI, Streamlit, performance testing, and containerization
+- **Phase 5:** plain-Python LLM router and labeled tool-selection evaluation (complete)
+- **Phase 6:** FastAPI endpoints exposing the existing tools and `run_agent` (next)
+- **Later:** Streamlit demo, Docker, performance testing, deployment, and review-text embeddings

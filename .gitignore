@@ -167,3 +167,6 @@ mlruns/
 mlartifacts/
 /mlflow.db
 /.matplotlib/
+
+# Generated Phase 5 router checkpoints
+reports/phase_5_router_predictions.csv

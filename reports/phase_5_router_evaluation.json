@@ -1,0 +1,51 @@
+{
+  "model": "gpt-4o-mini",
+  "total_queries": 40,
+  "correct_queries": 40,
+  "tool_selection_accuracy": 1.0,
+  "per_tool": {
+    "explain_risk": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0
+    },
+    "get_seller_history": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0
+    },
+    "get_similar_past_orders": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0
+    },
+    "need_clarification": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0
+    },
+    "predict_delay_risk": {
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0
+    }
+  },
+  "confusion": {
+    "explain_risk": {
+      "explain_risk": 8
+    },
+    "get_seller_history": {
+      "get_seller_history": 8
+    },
+    "get_similar_past_orders": {
+      "get_similar_past_orders": 8
+    },
+    "need_clarification": {
+      "need_clarification": 8
+    },
+    "predict_delay_risk": {
+      "predict_delay_risk": 8
+    }
+  },
+  "router_errors": 0
+}
